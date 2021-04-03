@@ -41,6 +41,12 @@ enum PspSysMemBlockTypes {
 
 typedef int SceKernelSysMemAlloc_t;
 
+/** Additional options for ::sceKernelAllocMemoryBlock */
+typedef struct SceKernelMemoryBlockOptParam {
+	/** Size of the ::SceKernelMemoryBlockOptParam structure. */
+	SceSize size;
+} SceKernelMemoryBlockOptParam;
+
 /**
  * Allocate a memory block from a memory partition.
  *
@@ -71,6 +77,51 @@ int sceKernelFreePartitionMemory(SceUID blockid);
  * @return The lowest address belonging to the memory block.
  */
 void * sceKernelGetBlockHeadAddr(SceUID blockid);
+
+/**
+ * Allocate a memory block from the user memory partition.
+ *
+ * @note Only available in PSP firmware >= 3.5.0
+ *
+ * @param name - Name assigned to the new block. Not checked for uniqueness. Cannot be NULL.
+ * @param type - Specifies how the block is allocated within the user partition.
+ *               Specify PSP_SMEM_Low or PSP_SMEM_High. The other types are illegal.
+ * @param size - Size of the memory block, in bytes.
+ * @param opt  - Additional options. Unused, pass NULL.
+ *
+ * @return > 0 memory block ID
+ *         < 0 on error:
+ *         SCE_KERNEL_ERROR_ERROR
+ *         SCE_KERNEL_ERROR_ILLEGAL_ARGUMENT
+ *         SCE_KERNEL_ERROR_ILLEGAL_MEMBLOCKTYPE
+ *         SCE_KERNEL_ERROR_MEMBLOCK_ALLOC_FAILED
+ */
+SceUID sceKernelAllocMemoryBlock(const char *name, SceKernelSysMemAlloc_t type, SceSize size, const SceKernelMemoryBlockOptParam *opt);
+
+/**
+ * Free a memory block allocated with ::sceKernelAllocMemoryBlock.
+ *
+ * @note Only available in PSP firmware >= 3.5.0
+ *
+ * @param mbid - Memory block ID
+ *
+ * @return ? on success, < 0 on error (eg. SCE_KERNEL_ERROR_UNKNOWN_UID)
+ */
+int sceKernelFreeMemoryBlock(SceUID mbid);
+
+/**
+ * Get the address of a memory block allocated with ::sceKernelAllocMemoryBlock.
+ *
+ * @note Only available in PSP firmware >= 3.5.0
+ *
+ * @param mbid - Memory block ID.
+ * @param pBlock - Pointer to receive the block address.
+ *
+ * @return ? on success, < 0 on error:
+ *         SCE_KERNEL_ERROR_UNKNOWN_UID
+ *         SCE_KERNEL_ERROR_ILLEGAL_ADDR
+ */
+int sceKernelGetMemoryBlockAddr(SceUID mbid, void **pBlock);
 
 /**
  * Get the total amount of free memory.
