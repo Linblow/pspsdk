@@ -37,6 +37,10 @@ enum PspSysMemBlockTypes {
 	PSP_SMEM_High,
 	/** Allocate from the specified address. */
 	PSP_SMEM_Addr
+	/** Allocate from the lowest available address aligned to the specified value (eg. 4096). */
+	PSP_SMEM_LowAligned, // 3
+	/** Allocate from the highest available address aligned to the specified value (eg. 4096). */
+	PSP_SMEM_HighAligned, // 4
 };
 
 typedef int SceKernelSysMemAlloc_t;
@@ -55,6 +59,7 @@ typedef struct SceKernelMemoryBlockOptParam {
  * @param type - Specifies how the block is allocated within the partition.  One of ::PspSysMemBlockTypes.
  * @param size - Size of the memory block, in bytes.
  * @param addr - If type is PSP_SMEM_Addr, then addr specifies the lowest address allocate the block from.
+ *               If type is PSP_SMEM_LowAligned or PSP_SMEM_HighAligned, then addr specifies the alignment (eg. 4096).
  *
  * @return The UID of the new block, or if less than 0 an error.
  */
